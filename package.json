@@ -1,0 +1,16 @@
+{
+  "name": "@offactory/dom-observer",
+  "version": "1.1.0",
+  "description": "Class that will render async added elements to DOM in one place. For example via a tag manager.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "dom",
+    "observer"
+  ],
+  "author": "Adam Arcanov",
+  "license": "ISC",
+  "dependencies": {}
+}
