@@ -1,4 +1,4 @@
-const { assign } = Object;
+import { assign } from '/node_modules/lodash';
 
 class DomObserver {
     constructor(props) {        
@@ -7,7 +7,6 @@ class DomObserver {
         this.setState = this.setState.bind(this)
         this.updateState = this.updateState.bind(this)
         this.init = this.init.bind(this)
-        this.stop = this.stop.bind(this)
         this.render = this.render.bind(this)
 
         this.observerConfig = { 
@@ -43,7 +42,7 @@ class DomObserver {
         // get element in dom init
         elements.map( element => element.dom = document.querySelectorAll(element.selector))
         
-        const observer = new MutationObserver( domUpdates => {
+        this.state.observer = new MutationObserver( domUpdates => {
             // get element in dom on update
             elements.map( element => {
                 const queryElements = document.querySelectorAll(element.selector)
@@ -55,7 +54,7 @@ class DomObserver {
             if ( allAsyncElements.length === allAsyncElementsLoaded.length ) {
                 this.updateState({ asyncElementsLoaded: true })
                 // remove listener after detecting async elements 
-                observer.disconnect();
+                this.state.observer.disconnect();
             }
 
             // if elements does not exist, remove observer after 5sec
@@ -63,18 +62,15 @@ class DomObserver {
 
             this.setState({ event: 'domupdate', domUpdates });
         });
-        this.updateState({ observer })
+        this.updateState({}) // trigger render
+
         // run observer if async elements exist
-        if ( hasAsyncElement ) observer.observe(document.body, config ? config : this.observerConfig);
+        if ( hasAsyncElement ) this.state.observer.observe(document.body, config ? config : this.observerConfig);
 
         // event listeners
         ( events ? events : [ 'load', 'resize', 'scroll', 'hashchange' ] ).map( event => {
             window.addEventListener(event, e => { this.setState({ event, eventProps: e }) }, false)
         })
-    }
-
-    stop() {
-        this.state.observer.disconnect()
     }
 
     render(cb) {
