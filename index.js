@@ -42,7 +42,9 @@ class DomObserver {
         // get element in dom init
         elements.map( element => element.dom = document.querySelectorAll(element.selector))
         
-        this.state.observer = new MutationObserver( domUpdates => {
+        const observer = new MutationObserver()
+        this.updateState({ observer })
+        observer( domUpdates => {
             // get element in dom on update
             elements.map( element => {
                 const queryElements = document.querySelectorAll(element.selector)
@@ -62,7 +64,6 @@ class DomObserver {
 
             this.setState({ event: 'domupdate', domUpdates });
         });
-        this.updateState({}) // trigger render
 
         // run observer if async elements exist
         if ( hasAsyncElement ) this.state.observer.observe(document.body, config ? config : this.observerConfig);

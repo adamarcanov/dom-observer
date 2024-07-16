@@ -1,6 +1,6 @@
 {
   "name": "@offactory/dom-observer",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "Class that will render async added elements to DOM in one place. For example via a tag manager.",
   "main": "index.js",
   "scripts": {
@@ -12,5 +12,7 @@
   ],
   "author": "Adam Arcanov",
   "license": "ISC",
-  "dependencies": {}
+  "devDependencies": {
+    "lodash": "^4.17.21"
+  }
 }
