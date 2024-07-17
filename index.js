@@ -37,14 +37,11 @@ class DomObserver {
         this.setState({ event: 'init' });
 
         const { elements, config, events } = this.props
-        const hasAsyncElement = elements.filter( element => element.async).length > 0
 
         // get element in dom init
-        elements.map( element => element.dom = document.querySelectorAll(element.selector))
+        elements.map( element => element.dom = document.querySelectorAll(element.selector) )
         
-        const observer = new MutationObserver()
-        this.updateState({ observer })
-        observer( domUpdates => {
+        const callback = domUpdates => {
             // get element in dom on update
             elements.map( element => {
                 const queryElements = document.querySelectorAll(element.selector)
@@ -55,18 +52,16 @@ class DomObserver {
             const allAsyncElementsLoaded = allAsyncElements.filter( element => element.dom && element.dom.length > 0 )
             if ( allAsyncElements.length === allAsyncElementsLoaded.length ) {
                 this.updateState({ asyncElementsLoaded: true })
-                // remove listener after detecting async elements 
                 this.state.observer.disconnect();
             }
 
-            // if elements does not exist, remove observer after 5sec
-            // setTimeout( () => allAsyncLoaded.length !== elements.length && observer.disconnect(), 5000)
-
             this.setState({ event: 'domupdate', domUpdates });
-        });
+        };
 
-        // run observer if async elements exist
-        if ( hasAsyncElement ) this.state.observer.observe(document.body, config ? config : this.observerConfig);
+        const observer = new MutationObserver(callback)
+        
+        observer.observe(document.body, config ? config : this.observerConfig);
+        this.updateState({ observer });
 
         // event listeners
         ( events ? events : [ 'load', 'resize', 'scroll', 'hashchange' ] ).map( event => {
