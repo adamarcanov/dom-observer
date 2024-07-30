@@ -1,5 +1,3 @@
-import { assign } from '/node_modules/lodash';
-
 class DomObserver {
     constructor(props) {        
         this.props = props
@@ -25,12 +23,12 @@ class DomObserver {
     }
 
     setState(props) {
-        assign(this.state, props);
+        Object.assign(this.state, props);
         this.render(this.cb)
     }
 
     updateState(props) {
-        assign(this.state, props);
+        Object.assign(this.state, props);
     }
 
     init() {
