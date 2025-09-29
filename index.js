@@ -6,6 +6,7 @@ class DomObserver {
         this.updateState = this.updateState.bind(this)
         this.init = this.init.bind(this)
         this.render = this.render.bind(this)
+        this.destroy = this.destroy.bind(this)
 
         this.observerConfig = { 
             childList: true, 
@@ -18,6 +19,8 @@ class DomObserver {
             domUpdates: undefined,
             observer: false,
         }
+
+        this.eventListeners = []
 
         this.init()
     }
@@ -61,10 +64,32 @@ class DomObserver {
         observer.observe(document.body, config ? config : this.observerConfig);
         this.updateState({ observer });
 
-        // event listeners
-        ( events ? events : [ 'load', 'resize', 'scroll', 'hashchange' ] ).map( event => {
-            window.addEventListener(event, e => { this.setState({ event, eventProps: e }) }, false)
-        })
+        // save event listeners to remove later
+        const eventsList = events ? events : [ 'load', 'resize', 'scroll', 'hashchange' ];
+        
+        eventsList.forEach(event => {
+            const handler = e => { this.setState({ event, eventProps: e }) };
+            window.addEventListener(event, handler, false);
+            
+            // Store reference to remove later
+            this.eventListeners.push({ event, handler });
+        });
+    }
+
+    destroy() {
+        // Remove observer
+        if (this.state.observer) {
+            this.state.observer.disconnect();
+        }
+        
+        // Remove event listeners
+        this.eventListeners.forEach(({ event, handler }) => {
+            window.removeEventListener(event, handler, false);
+        });
+        
+        // Clear references
+        this.eventListeners = [];
+        this.cb = null;
     }
 
     render(cb) {
